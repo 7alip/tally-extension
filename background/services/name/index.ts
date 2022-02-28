@@ -174,7 +174,7 @@ export default class NameService extends BaseService<Events> {
       // This is going to be strange, though, as we'll be looking up ENS names for
       // non-Ethereum networks (eg eventually Bitcoin).
       // Use the ethers.js resolver to get the address
-      const provider = this.chainService.pollingProviders.ethereum
+      const provider = this.chainService.providers.ethereum
       // TODO cache name resolution and TTL
       address = await provider.resolveName(name)
     } else {
@@ -218,7 +218,7 @@ export default class NameService extends BaseService<Events> {
       }
     }
 
-    const provider = this.chainService.pollingProviders.ethereum
+    const provider = this.chainService.providers.ethereum
     // TODO cache name resolution and TTL
     const name = await provider.lookupAddress(address)
     // TODO proper domain name validation ala RFC2181
@@ -268,7 +268,7 @@ export default class NameService extends BaseService<Events> {
       return undefined
     }
     // TODO handle if it doesn't exist
-    const provider = this.chainService.pollingProviders.ethereum
+    const provider = this.chainService.providers.ethereum
     const resolver = await provider.getResolver(name)
     if (!sameEVMAddress(await resolver?.getAddress(), address)) {
       return undefined
