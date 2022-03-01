@@ -150,6 +150,7 @@ export const checkIfStringIsValidDomainName = (s: string): boolean => {
       ".zil",
       ".x",
       ".eth",
+      '.rsk'
     ]
 
     if (supportedDomains.includes(domainExtension)) {

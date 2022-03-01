@@ -1,4 +1,5 @@
 import { Resolution as UnstoppableDomainsResolution } from "@unstoppabledomains/resolution"
+import RNSResolver from "@rsksmart/rns-resolver.js"
 import { DomainName, HexString, UNIXTime } from "../../types"
 import { EVMNetwork } from "../../networks"
 import {
@@ -23,7 +24,7 @@ type ResolvedAddressRecord = {
   resolved: {
     addressNetwork: AddressOnNetwork
   }
-  system: "ENS" | "UNS"
+  system: "ENS" | "UNS" | "RNS"
 }
 
 type ResolvedNameRecord = {
@@ -34,7 +35,7 @@ type ResolvedNameRecord = {
     name: DomainName
     expiresAt: UNIXTime
   }
-  system: "ENS" | "UNS"
+  system: "ENS" | "UNS" | "RNS"
 }
 
 type ResolvedAvatarRecord = {
@@ -44,7 +45,7 @@ type ResolvedAvatarRecord = {
   resolved: {
     avatar: URL
   }
-  system: "ENS" | "UNS"
+  system: "ENS" | "UNS" | "RNS"
 }
 
 type Events = ServiceLifecycleEvents & {
@@ -167,7 +168,7 @@ export default class NameService extends BaseService<Events> {
     }
 
     let address: string | null
-    let system: "ENS" | "UNS" = "ENS"
+    let system: "ENS" | "RNS" | "UNS" = "ENS"
 
     if (name.match(/.*\.eth$/)) {
       // TODO ENS lookups should work on Ethereum mainnet and a few testnets as well.
@@ -177,6 +178,14 @@ export default class NameService extends BaseService<Events> {
       const provider = this.chainService.providers.ethereum
       // TODO cache name resolution and TTL
       address = await provider.resolveName(name)
+    } else if (name.match(/.*\.rsk$/)) {
+      try {
+        const rnsResolver = RNSResolver.forRskMainnet({})
+        // TODO allow coinType parameter based on chainID
+        address = (await rnsResolver.addr(name)).toLowerCase()
+      } catch (error) {
+        address = null
+      }
     } else {
       // Otherwise we try to resolve the namme using unstoppable domains
       const resolution = new UnstoppableDomainsResolution()

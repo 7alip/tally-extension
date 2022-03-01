@@ -6,6 +6,7 @@ import {
   addAccountByName,
 } from "@tallyho/tally-background/redux-slices/accounts"
 import { ETHEREUM } from "@tallyho/tally-background/constants/networks"
+import { checkIfStringIsValidDomainName } from "@tallyho/tally-background/lib/utils"
 import { setNewSelectedAccount } from "@tallyho/tally-background/redux-slices/ui"
 import { useBackgroundDispatch } from "../../hooks"
 import SharedInput from "../../components/Shared/SharedInput"
@@ -20,7 +21,7 @@ export default function OnboardingViewOnlyWallet(): ReactElement {
 
   const handleSubmitViewOnlyAddress = useCallback(async () => {
     const trimmedAddress = address.trim()
-    if (trimmedAddress.endsWith(".eth")) {
+    if (checkIfStringIsValidDomainName(trimmedAddress)) {
       const nameNetwork = {
         name: trimmedAddress,
         network: ETHEREUM,
